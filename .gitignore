@@ -12,6 +12,10 @@
 /.next/
 /out/
 
+#firestore
+/utils/db/config.js
+/utils/db/serviceAccount.json
+
 # production
 /build
 

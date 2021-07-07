@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Layout from '../components/layout';
 import {
@@ -8,23 +10,72 @@ import {
     Divider,
     VStack,
     Center,
+    Heading,
 } from '@chakra-ui/layout';
+import { Button } from '@chakra-ui/button';
 import { Spinner } from '@chakra-ui/spinner';
-import ResponseSummary from '../components/response/response-summary';
-import ResponseStats from '../components/response/response-stats';
-import SortingButtons from '../components/sortingButtons';
+import PostSummary from '../components/post/PostSummary';
+import PostStats from '../components/post/PostStats';
+import SortingButtons from '../components/SortingButtons';
+import Select from 'react-select';
 
-import data from '../question.json';
-
-export default function Home() {
-    const [responses, setResponses] = useState(null);
+const Home = () => {
+    const router = useRouter();
+    const [posts, setPosts] = useState(null);
     const [sortType, setSortType] = useState('Votes');
+    const [lastKey, setLastKey] = useState('');
+    const [nextPostsLoading, setNextPostsLoading] = useState(false);
+    const [options, setOptions] = useState([]);
 
     useEffect(() => {
-        setTimeout(() => {
-            setResponses(data);
-        }, [500]);
-    }, [data]);
+        const fetchData = async () => {
+            const link = router.query.tag
+                ? `api/data?tag=${router.query.tag}`
+                : `api/data`;
+            const response = await axios.get(link);
+            setPosts(response.data.posts);
+
+            setLastKey(response.data.lastKey);
+            console.log('Data is fetched');
+        };
+
+        fetchData();
+    }, [router.query.tag]);
+
+    useEffect(() => {
+        const fetchTags = async () => {
+            const link = 'api/tags';
+            const response = await axios.get(link);
+            console.log('tags', response.data);
+            setOptions(response.data.tags);
+        };
+
+        fetchTags();
+    }, []);
+
+    const fetchMorePosts = (key) => {
+        if (key.length > 0) {
+            setNextPostsLoading(true);
+            const fetchData = async () => {
+                try {
+                    const link = router.query.tag
+                        ? `api/data?tag=${router.query.tag}?key=${lastKey}`
+                        : `api/data?key=${lastKey}`;
+                    const response = await axios.get(link);
+
+                    console.log('res', response);
+                    setLastKey(response.data.lastKey);
+                    setPosts(posts.concat(response.data.posts));
+                    setNextPostsLoading(false);
+                } catch (err) {
+                    console.log(err);
+                    setNextPostsLoading(false);
+                }
+            };
+
+            fetchData();
+        }
+    };
 
     const handleSorting = () => {
         switch (sortType) {
@@ -43,6 +94,30 @@ export default function Home() {
         }
     };
 
+    const handleChangeSelect = (inputValue) => {
+        if (inputValue) {
+            router.push(`/?tag=${inputValue.value}`);
+        }
+    };
+
+    const customStyles = {
+        control: (provided) => ({
+            ...provided,
+            // border: state.isFocused ? '1px solid #00a0dc' : provided.border,
+            textAlign: 'center',
+        }),
+        option: (provided, { isDisabled, isSelected, isFocused }) => ({
+            ...provided,
+            backgroundColor: isDisabled
+                ? null
+                : isSelected
+                ? '#00a0dc'
+                : isFocused
+                ? '#00a0dc'
+                : null,
+        }),
+    };
+
     return (
         <Layout>
             <Head>
@@ -51,7 +126,32 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <Center pb={2}>
+            <Center
+                align="center"
+                flexDirection={['column-reverse', 'row']}
+                mt={[2, 0]}
+            >
+                <Heading my={2} as="h2" size="md">
+                    {router.query.tag
+                        ? `Responses tagged [${router.query.tag}]`
+                        : 'All Responses'}
+                </Heading>
+                <Box ml={5} w={['50%', '20%']} mb={[2, 0]}>
+                    <Select
+                        options={options}
+                        placeholder="Search by tag"
+                        onChange={handleChangeSelect}
+                        isClearable
+                        styles={customStyles}
+                        components={{
+                            DropdownIndicator: () => null,
+                            IndicatorSeparator: () => null,
+                        }}
+                    />
+                </Box>
+            </Center>
+
+            <Center mb={2}>
                 <SortingButtons
                     buttons={[
                         'Votes',
@@ -64,16 +164,19 @@ export default function Home() {
                     setSelected={setSortType}
                 />
             </Center>
+            <Center>
+                <Divider mb={2} w="60%" />
+            </Center>
 
-            {!responses && (
+            {!posts && (
                 <Center>
                     <Spinner />{' '}
                 </Center>
             )}
-            <Container>
+            <Container maxW="2xl">
                 <VStack spacing={2} align="stretch" divider={<Divider />}>
-                    {responses
-                        ? responses
+                    {posts
+                        ? posts
                               .sort(handleSorting())
                               .map(
                                   ({
@@ -90,19 +193,17 @@ export default function Home() {
                                       <Flex
                                           key={id}
                                           direction="row"
-                                          align="start"
-                                          justify="flex-start"
-                                          bg="gray.200"
+                                          borderRadius="md"
                                       >
                                           <Box w="15%">
-                                              <ResponseStats
+                                              <PostStats
                                                   voteCount={votes.length}
                                                   answerCount={answers.length}
                                                   view={views}
                                               />
                                           </Box>
-                                          <Box w="85%">
-                                              <ResponseSummary
+                                          <Box w="85%" m={1}>
+                                              <PostSummary
                                                   id={id}
                                                   title={title}
                                                   tags={tags}
@@ -110,14 +211,41 @@ export default function Home() {
                                                   createdTime={created}
                                               >
                                                   {text}
-                                              </ResponseSummary>
+                                              </PostSummary>
                                           </Box>
                                       </Flex>
                                   )
                               )
                         : null}
+                    <Center>
+                        {nextPostsLoading ? (
+                            <Spinner />
+                        ) : lastKey.length > 0 ? (
+                            <Button onClick={() => fetchMorePosts(lastKey)}>
+                                More Posts
+                            </Button>
+                        ) : (
+                            <span>You are up to date!</span>
+                        )}
+                    </Center>
                 </VStack>
             </Container>
         </Layout>
     );
-}
+};
+
+export default Home;
+
+// export async function getServerSideProps() {
+//     const data = await db.collection('responses').get();
+
+//     if (!data) {
+//         return {
+//             notFound: true,
+//         };
+//     }
+
+//     return {
+//         props: { responses: data },
+//     };
+// }

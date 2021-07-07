@@ -1,6 +1,6 @@
 import { Flex, Text } from '@chakra-ui/layout';
 
-const ResponseStats = ({ voteCount, answerCount, view }) => {
+const PostStats = ({ voteCount, answerCount, view }) => {
     return (
         <Flex
             color="gray.600"
@@ -8,6 +8,7 @@ const ResponseStats = ({ voteCount, answerCount, view }) => {
             bg="blue.100"
             justify="center"
             align="center"
+            borderLeftRadius="md"
         >
             <Text fontSize="lg">{voteCount}</Text>
             <Text fontSize="xs">votes</Text>
@@ -21,4 +22,4 @@ const ResponseStats = ({ voteCount, answerCount, view }) => {
     );
 };
 
-export default ResponseStats;
+export default PostStats;
