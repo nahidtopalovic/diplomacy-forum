@@ -12,8 +12,10 @@ import {
 } from '@chakra-ui/react';
 import styles from './header.module.css';
 import SignIn from '../../SignInModal';
+import { useAuth } from '../../../context/AuthUserContext';
 
 const Header = () => {
+    const { authUser, logout } = useAuth();
     return (
         <Box className={styles.header} bg="white">
             <Flex
@@ -62,21 +64,40 @@ const Header = () => {
                     direction={'row'}
                     spacing={6}
                 >
-                    <SignIn />
-                    <Button
-                        display={{ base: 1, md: 'inline-flex' }}
-                        fontSize={'sm'}
-                        fontWeight={600}
-                        color={'white'}
-                        bg="linkedin.500"
-                        href={'#'}
-                        _hover={{
-                            bg: 'blue.800',
-                        }}
-                        size={('xs', 'md')}
-                    >
-                        Sign Up
-                    </Button>
+                    {authUser ? (
+                        <Button
+                            display={{ base: 1, md: 'inline-flex' }}
+                            fontSize={'sm'}
+                            fontWeight={600}
+                            color={'white'}
+                            bg="gray.500"
+                            _hover={{
+                                bg: 'blue.800',
+                            }}
+                            size={('xs', 'md')}
+                            onClick={logout}
+                        >
+                            Log out!
+                        </Button>
+                    ) : (
+                        <>
+                            <SignIn />
+                            <Button
+                                display={{ base: 1, md: 'inline-flex' }}
+                                fontSize={'sm'}
+                                fontWeight={600}
+                                color={'white'}
+                                bg="linkedin.500"
+                                href={'#'}
+                                _hover={{
+                                    bg: 'blue.800',
+                                }}
+                                size={('xs', 'md')}
+                            >
+                                Sign Up
+                            </Button>
+                        </>
+                    )}
                 </Stack>
             </Flex>
         </Box>

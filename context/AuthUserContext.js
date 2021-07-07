@@ -1,9 +1,10 @@
 import { createContext, useContext } from 'react';
-import useFirebaseAuth from '../utils/db/useFirebaseAuth';
+import useFirebaseAuth from '../utils/auth/useFirebaseAuth';
 
 const authUserContext = createContext({
     authUser: null,
     loading: true,
+    token: null,
 });
 
 export function AuthUserProvider({ children }) {

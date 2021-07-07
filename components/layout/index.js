@@ -2,12 +2,16 @@ import Header from './header';
 import { useAuth } from '../../context/AuthUserContext';
 
 const Layout = ({ children }) => {
-    const { authUser } = useAuth;
+    const { authUser } = useAuth();
     console.log(authUser);
     return (
         <div>
             <Header />
-            {authUser ? <div>{authUser} signed in!</div> : 'Not logged in'}
+            {authUser ? (
+                <div>{authUser.email} signed in!</div>
+            ) : (
+                'Not logged in'
+            )}
             {children}
         </div>
     );
