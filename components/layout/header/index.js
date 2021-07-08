@@ -62,7 +62,7 @@ const Header = () => {
                     flex={{ base: 1, md: 0 }}
                     justify={'flex-end'}
                     direction={'row'}
-                    spacing={6}
+                    spacing={3}
                 >
                     {authUser ? (
                         <Button

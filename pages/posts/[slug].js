@@ -22,7 +22,6 @@ const PostDetail = ({ postId, title }) => {
     useEffect(() => {
         const fetchPost = async () => {
             const postData = await axios.get(`/api/posts/${postId}`);
-            console.log(postData.data);
             setPost(postData.data);
         };
 

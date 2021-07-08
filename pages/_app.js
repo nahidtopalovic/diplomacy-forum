@@ -1,12 +1,15 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { AuthUserProvider } from '../context/AuthUserContext';
+import { FetchProvider } from '../context/FetchContext';
 
 function MyApp({ Component, pageProps }) {
     return (
         <AuthUserProvider>
-            <ChakraProvider>
-                <Component {...pageProps} />;
-            </ChakraProvider>
+            <FetchProvider>
+                <ChakraProvider>
+                    <Component {...pageProps} />;
+                </ChakraProvider>
+            </FetchProvider>
         </AuthUserProvider>
     );
 }

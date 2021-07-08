@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
@@ -18,6 +18,7 @@ import PostSummary from '../components/post/PostSummary';
 import PostStats from '../components/post/PostStats';
 import SortingButtons from '../components/SortingButtons';
 import Select from 'react-select';
+import { FetchContext } from '../context/FetchContext';
 
 const Home = () => {
     const router = useRouter();
@@ -26,6 +27,7 @@ const Home = () => {
     const [lastKey, setLastKey] = useState('');
     const [nextPostsLoading, setNextPostsLoading] = useState(false);
     const [options, setOptions] = useState([]);
+    const { authAxios } = useContext(FetchContext);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -36,7 +38,6 @@ const Home = () => {
             setPosts(response.data.posts);
 
             setLastKey(response.data.lastKey);
-            console.log('Data is fetched');
         };
 
         fetchData();
@@ -46,7 +47,6 @@ const Home = () => {
         const fetchTags = async () => {
             const link = 'api/tags';
             const response = await axios.get(link);
-            console.log('tags', response.data);
             setOptions(response.data.tags);
         };
 
@@ -151,7 +151,7 @@ const Home = () => {
                 </Box>
             </Center>
 
-            <Center mb={2}>
+            <Center mb={2} mt={1}>
                 <SortingButtons
                     buttons={[
                         'Votes',

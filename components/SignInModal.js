@@ -11,11 +11,13 @@ import {
     Flex,
     Heading,
     Icon,
+    Center,
 } from '@chakra-ui/react';
 import { RiQuestionAnswerFill } from 'react-icons/ri';
 
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { firebase, auth } from '../utils/db/firebase';
+import { useAuth } from '../context/AuthUserContext';
 
 const uiConfig = {
     signInFlow: 'popup',
@@ -34,6 +36,8 @@ const uiConfig = {
 
 const SignIn = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { authUser } = useAuth();
+
     return (
         <>
             <Button
@@ -73,13 +77,14 @@ const SignIn = () => {
                             uiConfig={uiConfig}
                             firebaseAuth={auth}
                         />
+                        {authUser ? (
+                            <Center>
+                                <Heading>Signed in successfully</Heading>
+                            </Center>
+                        ) : null}
                     </ModalBody>
 
-                    <ModalFooter>
-                        <Button colorScheme="linkedin" mr={3} onClick={onClose}>
-                            Close
-                        </Button>
-                    </ModalFooter>
+                    <ModalFooter></ModalFooter>
                 </ModalContent>
             </Modal>
         </>

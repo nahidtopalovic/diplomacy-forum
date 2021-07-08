@@ -1,9 +1,41 @@
+// import { authAxios } from '../../context/FetchContext';
 import { IconButton } from '@chakra-ui/button';
 import { VStack, Text } from '@chakra-ui/layout';
-// import { ArrowUpIcon, ArrowDownIcon } from '@chakra-ui/icons';
+// import { useAuth } from '../../context/AuthUserContext';
 import { BiDownvote, BiUpvote } from 'react-icons/bi';
 
 const PostVote = ({ score }) => {
+    // const { authUser } = useAuth();
+    // add as props: votes, postId, commentId, setPost
+    // const isUpVoted = () => {
+    //     return votes.find((vote) => vote.user === authUser?.id)?.vote === 1;
+    // };
+
+    // const isDownVoted = () => {
+    //     return votes.find((vote) => vote.user === authUser?.id)?.vote === -1;
+    // };
+
+    // const upVote = async () => {
+    //     const { data } = await authAxios.get(
+    //         `votes/upvote/${postId}/${commentId ? commentId : ''}`
+    //     );
+    //     setPost(data);
+    // };
+
+    // const downVote = async () => {
+    //     const { data } = await authAxios.get(
+    //         `votes/downvote/${postId}/${commentId ? commentId : ''}`
+    //     );
+    //     setPost(data);
+    // };
+
+    // const undoVote = async () => {
+    //     const { data } = await authAxios.get(
+    //         `votes/undovote/${postId}/${commentId ? commentId : ''}`
+    //     );
+    //     setPost(data);
+    // };
+
     return (
         <div>
             <VStack direction="column" align="center" justify="center" mr={3}>

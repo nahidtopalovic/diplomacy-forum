@@ -3,7 +3,6 @@ import { useAuth } from '../../context/AuthUserContext';
 
 const Layout = ({ children }) => {
     const { authUser } = useAuth();
-    console.log(authUser);
     return (
         <div>
             <Header />
