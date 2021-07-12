@@ -6,7 +6,6 @@ export const withAuth = (handler) => {
         if (!authHeader) {
             return res.status(401).end('Not authenticated. No Auth header');
         }
-        console.log('authHeader', authHeader);
 
         const token = authHeader.split(' ')[1];
 

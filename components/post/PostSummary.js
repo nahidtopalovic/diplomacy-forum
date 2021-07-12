@@ -40,7 +40,7 @@ const PostSummary = ({ id, title, tags, author, createdTime, children }) => {
                 </Stack>
                 <VStack align="start">
                     <Text fontSize="xs">
-                        asked{' '}
+                        posted{' '}
                         {formatDistanceToNowStrict(new Date(createdTime), {
                             addSuffix: true,
                         })}

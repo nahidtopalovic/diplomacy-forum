@@ -5,12 +5,15 @@ const getTags = async (req, res) => {
         let tagsDistinct = new Set();
 
         const snapshot = await db.collection('responses').get();
-        snapshot.forEach((doc) => {
-            const tags = doc.data().tags;
 
-            tags.forEach((tag) => {
-                tagsDistinct.add(tag);
-            });
+        snapshot.forEach((doc) => {
+            if (doc.data().tags != undefined) {
+                const tags = doc.data().tags;
+
+                tags.forEach((tag) => {
+                    tagsDistinct.add(tag);
+                });
+            }
         });
 
         const tags = [...tagsDistinct].map((tag) => {

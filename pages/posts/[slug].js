@@ -19,6 +19,8 @@ const PostDetail = ({ postId, title }) => {
     const [post, setPost] = useState(null);
     const [commentSortType, setCommentSortType] = useState('Votes');
 
+    console.log('data:', post);
+
     useEffect(() => {
         const fetchPost = async () => {
             const postData = await axios.get(`/api/posts/${postId}`);
@@ -63,7 +65,12 @@ const PostDetail = ({ postId, title }) => {
                     {post && (
                         <>
                             <Flex mb={4} align="center">
-                                <PostVote score={post.score} />
+                                <PostVote
+                                    score={post.score}
+                                    votes={post.votes}
+                                    postId={post.id}
+                                    setPost={setPost}
+                                />
                                 <PostDetailedSummary
                                     tags={post.tags}
                                     author={post.author}
@@ -90,6 +97,9 @@ const PostDetail = ({ postId, title }) => {
                                                 <Flex>
                                                     <PostVote
                                                         score={comment.score}
+                                                        votes={comment.votes}
+                                                        commentId={comment.id}
+                                                        setPost={setPost}
                                                     />
                                                     <PostDetailedSummary
                                                         author={comment.author}
