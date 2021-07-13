@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import { RiQuestionAnswerFill } from 'react-icons/ri';
 import { Icon } from '@chakra-ui/icon';
 import Link from 'next/link';
@@ -11,11 +12,12 @@ import {
     useBreakpointValue,
 } from '@chakra-ui/react';
 import styles from './header.module.css';
-import SignIn from '../../SignInModal';
 import { useAuth } from '../../../context/AuthUserContext';
-
+import ModalContext from '../../../context/Modal';
 const Header = () => {
     const { authUser, logout } = useAuth();
+    const { onOpen } = useContext(ModalContext);
+
     return (
         <Box className={styles.header} bg="white">
             <Flex
@@ -81,8 +83,17 @@ const Header = () => {
                         </Button>
                     ) : (
                         <>
-                            <SignIn />
                             <Button
+                                onClick={onOpen}
+                                fontSize={'sm'}
+                                fontWeight={400}
+                                size={('xs', 'md')}
+                            >
+                                Sign In
+                            </Button>
+
+                            <Button
+                                onClick={onOpen}
                                 display={{ base: 1, md: 'inline-flex' }}
                                 fontSize={'sm'}
                                 fontWeight={600}

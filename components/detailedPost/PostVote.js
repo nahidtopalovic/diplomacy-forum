@@ -4,10 +4,12 @@ import { IconButton } from '@chakra-ui/button';
 import { VStack, Text } from '@chakra-ui/layout';
 import { useAuth } from '../../context/AuthUserContext';
 import { BiDownvote, BiUpvote } from 'react-icons/bi';
+import ModalContext from '../../context/Modal';
 
 const PostVote = ({ score, votes, postId, commentId, setPost }) => {
     const { authAxios } = useContext(FetchContext);
     const { authUser } = useAuth();
+    const { onOpen } = useContext(ModalContext);
 
     const isAuthenticated = () => {
         if (!authUser) {
@@ -66,7 +68,7 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
                             ? isUpVoted()
                                 ? unVote()
                                 : upVote()
-                            : console.log('not authenticated')
+                            : onOpen()
                     }
                 >
                     Up
@@ -84,7 +86,7 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
                             ? isDownVoted()
                                 ? unVote()
                                 : downVote()
-                            : null;
+                            : onOpen();
                     }}
                 >
                     Down

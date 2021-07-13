@@ -1,3 +1,4 @@
+import { useContext, useEffect } from 'react';
 import {
     Modal,
     ModalOverlay,
@@ -6,8 +7,6 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    Button,
-    useDisclosure,
     Flex,
     Heading,
     Icon,
@@ -18,6 +17,7 @@ import { RiQuestionAnswerFill } from 'react-icons/ri';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { firebase, auth } from '../utils/db/firebase';
 import { useAuth } from '../context/AuthUserContext';
+import ModalContext from '../context/Modal';
 
 const uiConfig = {
     signInFlow: 'popup',
@@ -34,21 +34,24 @@ const uiConfig = {
     },
 };
 
-const SignIn = () => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
+const SignInModal = () => {
     const { authUser } = useAuth();
+    const { isOpen, onClose } = useContext(ModalContext);
+
+    useEffect(() => {
+        const closeModal = async () => {
+            if (authUser) {
+                setTimeout(() => {
+                    onClose();
+                }, 500);
+            }
+        };
+
+        closeModal();
+    }, [authUser]);
 
     return (
         <>
-            <Button
-                onClick={onOpen}
-                fontSize={'sm'}
-                fontWeight={400}
-                size={('xs', 'md')}
-            >
-                Sign In
-            </Button>
-
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
@@ -79,7 +82,9 @@ const SignIn = () => {
                         />
                         {authUser ? (
                             <Center>
-                                <Heading>Signed in successfully</Heading>
+                                <Heading size="md">
+                                    Signed in successfully
+                                </Heading>
                             </Center>
                         ) : null}
                     </ModalBody>
@@ -91,4 +96,4 @@ const SignIn = () => {
     );
 };
 
-export default SignIn;
+export default SignInModal;
