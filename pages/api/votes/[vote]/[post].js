@@ -196,7 +196,7 @@ const unVote = async (req, res, post) => {
 // UPVOTE
 //
 
-const upVoteComm = async (req, res, post, comment) => {
+const upVoteComm = async (req, res, post) => {
     const docsRef = await db
         .collection('responses')
         .where('id', '==', post)
