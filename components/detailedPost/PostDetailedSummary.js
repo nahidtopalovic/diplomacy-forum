@@ -1,8 +1,19 @@
+import { useState } from 'react';
 import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict';
 import { Flex, HStack, VStack, Text, Spacer, Box } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/react';
+import AlertDialogPost from '../AlertDialogPost';
 
-const PostDetailedSummary = ({ tags, author, createdTime, children }) => {
+const PostDetailedSummary = ({
+    tags,
+    author,
+    createdTime,
+    children,
+    isAuthor,
+    typeOfPost,
+}) => {
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
         <Flex direction="column" mt={1} justify="space-around">
             <Box w={['xs', '2xl']}>
@@ -28,12 +39,30 @@ const PostDetailedSummary = ({ tags, author, createdTime, children }) => {
                     <Spacer />
                     <VStack mt="2" align="start" pr={3}>
                         <Text fontSize="xs">
-                            asked{' '}
+                            posted{' '}
                             {formatDistanceToNowStrict(new Date(createdTime), {
                                 addSuffix: true,
                             })}
                         </Text>
                         <Text fontSize="xs">by {author.username}</Text>
+                        {isAuthor && (
+                            <>
+                                <Button
+                                    colorScheme="red"
+                                    variant="outline"
+                                    size="xs"
+                                    w="60px"
+                                    onClick={() => setIsOpen(true)}
+                                >
+                                    Delete
+                                </Button>
+                                <AlertDialogPost
+                                    isOpen={isOpen}
+                                    setIsOpen={setIsOpen}
+                                    typeOfPost={typeOfPost}
+                                />
+                            </>
+                        )}
                     </VStack>
                 </Flex>
             </Flex>

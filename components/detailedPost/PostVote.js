@@ -15,7 +15,6 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
         if (!authUser) {
             return false;
         }
-        console.log('AUth user is: ', authUser);
         return true;
     };
     const isUpVoted = () => {
@@ -30,8 +29,7 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
         const { data } = await authAxios.post(
             `votes/upvote/${postId}/?comment=${commentId ? commentId : ''}`
         );
-        console.log('upvoted');
-        console.log('Data', data);
+
         setPost(data);
     };
 
@@ -39,8 +37,7 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
         const { data } = await authAxios.post(
             `votes/downvote/${postId}/?comment=${commentId ? commentId : ''}`
         );
-        console.log('downvoted');
-        console.log('Data', data);
+
         setPost(data);
     };
 
@@ -48,8 +45,7 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
         const { data } = await authAxios.post(
             `votes/unvote/${postId}/?comment=${commentId ? commentId : ''}`
         );
-        console.log('Unvoted!');
-        console.log('Data', data);
+
         setPost(data);
     };
 
