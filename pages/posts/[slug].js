@@ -44,9 +44,9 @@ const PostDetail = ({ postId, title }) => {
         }
     };
 
-    const handleDeleteComment = () => {
-        // logic for deletion of comment
-    };
+    // const handleDeleteComment = () => {
+    //     // logic for deletion of comment
+    // };
 
     return (
         <Layout>
