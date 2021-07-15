@@ -22,7 +22,7 @@ import Select from 'react-select';
 const Home = () => {
     const router = useRouter();
     const [posts, setPosts] = useState(null);
-    const [sortType, setSortType] = useState('Votes');
+    const [sortType, setSortType] = useState('Views');
     const [lastKey, setLastKey] = useState('');
     const [nextPostsLoading, setNextPostsLoading] = useState(false);
     const [options, setOptions] = useState([]);
