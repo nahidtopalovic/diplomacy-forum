@@ -1,5 +1,5 @@
-Forum platform powered by AI that helps users find the right words in difficult conversations. 
+Forum platform powered by AI that helps users find the right words in difficult conversations.
 
 Technologies used: NextJS, React, Chakra-UI, Firebase firestore and firebase authentication.
 
-Deployed on: 
+Deployed on: https://diplomacy-forum.vercel.app/
