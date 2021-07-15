@@ -9,7 +9,6 @@ const getData = async (req, res) => {
             .get();
 
         if (!snapshot.empty) {
-            console.log('docs', snapshot.docs);
             const data = snapshot.docs[0].data();
             res.send(data);
             return;

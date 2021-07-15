@@ -14,12 +14,13 @@ import PostDetailedSummary from '../../components/detailedPost/PostDetailedSumma
 import PostVote from '../../components/detailedPost/PostVote';
 import CommentContainer from '../../components/detailedPost/CommentContainer';
 import Head from 'next/head';
+import CommentInput from '../../components/post/CommentInput';
+import { useAuth } from '../../context/AuthUserContext';
 
 const PostDetail = ({ postId, title }) => {
     const [post, setPost] = useState(null);
     const [commentSortType, setCommentSortType] = useState('Votes');
-
-    console.log('data:', post);
+    const { authUser } = useAuth();
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -41,6 +42,10 @@ const PostDetail = ({ postId, title }) => {
             default:
                 break;
         }
+    };
+
+    const handleDeleteComment = () => {
+        // logic for deletion of comment
     };
 
     return (
@@ -76,11 +81,23 @@ const PostDetail = ({ postId, title }) => {
                                     author={post.author}
                                     created={post.created}
                                     createdTime={post.created}
+                                    isAuthor={post.author.id === authUser.id}
+                                    typeOfPost="post"
                                 >
                                     {post.text}
                                 </PostDetailedSummary>
                             </Flex>
                             <Divider mb={4} />
+                            {authUser && (
+                                <>
+                                    <CommentInput
+                                        postId={post.id}
+                                        setPost={setPost}
+                                    />
+                                    <Divider my={2} />
+                                </>
+                            )}
+
                             {post.answers.length > 0 && (
                                 <CommentContainer
                                     commentCount={post.answers.length}
@@ -109,6 +126,12 @@ const PostDetail = ({ postId, title }) => {
                                                         createdTime={
                                                             comment.created
                                                         }
+                                                        isAuthor={
+                                                            comment.author
+                                                                .id ===
+                                                            authUser.id
+                                                        }
+                                                        typeOfPost="comment"
                                                     >
                                                         {comment.text}
                                                     </PostDetailedSummary>
