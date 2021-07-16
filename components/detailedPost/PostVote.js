@@ -59,6 +59,7 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
                     fontSize="25px"
                     color={isUpVoted() ? 'linkedin.400' : ''}
                     icon={<BiUpvote />}
+                    style={{ cursor: 'pointer' }}
                     onClick={() =>
                         isAuthenticated()
                             ? isUpVoted()
@@ -77,6 +78,7 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
                     variant="ghost"
                     color={isDownVoted() ? 'linkedin.400' : ''}
                     icon={<BiDownvote />}
+                    style={{ cursor: 'pointer' }}
                     onClick={() => {
                         isAuthenticated()
                             ? isDownVoted()

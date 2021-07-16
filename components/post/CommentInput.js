@@ -24,7 +24,7 @@ const CommentInput = ({ postId, setPost }) => {
     } = useForm();
     const { authAxios } = useContext(FetchContext);
 
-    const onSubmit = async (inputData) => {
+    const onSubmit = async (inputData, e) => {
         try {
             const commentObject = {
                 postId: postId,
@@ -35,6 +35,7 @@ const CommentInput = ({ postId, setPost }) => {
             const { data } = await authAxios.post(link, commentObject);
             console.log('data from post', data);
             setPost(data);
+            e.target.reset();
             setIsSubmitted(true);
             setTimeout(() => {
                 setIsSubmitted(false);
