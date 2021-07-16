@@ -44,6 +44,20 @@ const PostDetail = ({ postId, title }) => {
         }
     };
 
+    const isAuthorForPost = () => {
+        if (post && authUser) {
+            return post.author.id === authUser.id;
+        }
+        return false;
+    };
+
+    const isAuthorForComment = (comment) => {
+        if (post && authUser) {
+            return comment.author.id === authUser.id;
+        }
+        return false;
+    };
+
     // const handleDeleteComment = () => {
     //     // logic for deletion of comment
     // };
@@ -81,7 +95,7 @@ const PostDetail = ({ postId, title }) => {
                                     author={post.author}
                                     created={post.created}
                                     createdTime={post.created}
-                                    isAuthor={post.author.id === authUser.id}
+                                    isAuthor={isAuthorForPost()}
                                     typeOfPost="post"
                                 >
                                     {post.text}
@@ -126,11 +140,9 @@ const PostDetail = ({ postId, title }) => {
                                                         createdTime={
                                                             comment.created
                                                         }
-                                                        isAuthor={
-                                                            comment.author
-                                                                .id ===
-                                                            authUser.id
-                                                        }
+                                                        isAuthor={isAuthorForComment(
+                                                            comment
+                                                        )}
                                                         typeOfPost="comment"
                                                     >
                                                         {comment.text}
