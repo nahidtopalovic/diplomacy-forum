@@ -15,7 +15,7 @@ const FetchProvider = ({ children }) => {
 
     authAxios.interceptors.request.use(
         (config) => {
-            config.headers.Authorization = `Bearer ${authUser?.token}`;
+            config.headers.myauth = `Bearer ${authUser?.token}`;
             return config;
         },
         (error) => {

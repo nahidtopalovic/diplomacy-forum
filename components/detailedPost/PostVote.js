@@ -26,25 +26,28 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
     };
 
     const upVote = async () => {
-        const { data } = await authAxios.post(
-            `votes/upvote/${postId}/?comment=${commentId ? commentId : ''}`
-        );
+        const link = commentId
+            ? `votes/upvote/${postId}/?comment=${commentId}`
+            : `votes/upvote/${postId}/`;
+        const { data } = await authAxios.post(link);
 
         setPost(data);
     };
 
     const downVote = async () => {
-        const { data } = await authAxios.post(
-            `votes/downvote/${postId}/?comment=${commentId ? commentId : ''}`
-        );
+        const link = commentId
+            ? `votes/downvote/${postId}/?comment=${commentId}`
+            : `votes/downvote/${postId}/`;
+        const { data } = await authAxios.post(link);
 
         setPost(data);
     };
 
     const unVote = async () => {
-        const { data } = await authAxios.post(
-            `votes/unvote/${postId}/?comment=${commentId ? commentId : ''}`
-        );
+        const link = commentId
+            ? `votes/unvote/${postId}/?comment=${commentId}`
+            : `votes/unvote/${postId}/`;
+        const { data } = await authAxios.post(link);
 
         setPost(data);
     };
@@ -59,7 +62,6 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
                     fontSize="25px"
                     color={isUpVoted() ? 'linkedin.400' : ''}
                     icon={<BiUpvote />}
-                    style={{ cursor: 'pointer' }}
                     onClick={() =>
                         isAuthenticated()
                             ? isUpVoted()
@@ -78,7 +80,6 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
                     variant="ghost"
                     color={isDownVoted() ? 'linkedin.400' : ''}
                     icon={<BiDownvote />}
-                    style={{ cursor: 'pointer' }}
                     onClick={() => {
                         isAuthenticated()
                             ? isDownVoted()

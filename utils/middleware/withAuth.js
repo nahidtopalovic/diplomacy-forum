@@ -2,7 +2,7 @@ import { authAdmin } from '../db/firebase-admin';
 
 export const withAuth = (handler) => {
     return async (req, res) => {
-        const authHeader = req.headers.authorization;
+        const authHeader = req.headers.myauth;
         if (!authHeader) {
             return res.status(401).end('Not authenticated. No Auth header');
         }
