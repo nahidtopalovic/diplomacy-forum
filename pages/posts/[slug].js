@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {
     Container,
     Box,
@@ -16,11 +16,13 @@ import CommentContainer from '../../components/detailedPost/CommentContainer';
 import Head from 'next/head';
 import CommentInput from '../../components/post/CommentInput';
 import { useAuth } from '../../context/AuthUserContext';
+import { FetchContext } from '../../context/FetchContext';
 
 const PostDetail = ({ postId, title }) => {
     const [post, setPost] = useState(null);
     const [commentSortType, setCommentSortType] = useState('Votes');
     const { authUser } = useAuth();
+    const { authAxios } = useContext(FetchContext);
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -29,7 +31,7 @@ const PostDetail = ({ postId, title }) => {
         };
 
         fetchPost();
-    }, []);
+    }, [handleDeleteComment]);
 
     const handleSorting = () => {
         switch (commentSortType) {
@@ -58,9 +60,18 @@ const PostDetail = ({ postId, title }) => {
         return false;
     };
 
-    // const handleDeleteComment = () => {
-    //     // logic for deletion of comment
-    // };
+    //
+    // pass handleDeleteComment to button in alertpop up via context
+    //
+
+    const handleDeleteComment = async (postId, commentId) => {
+        try {
+            const link = `posts/comment/${commentId}/?postId=${postId}`;
+            authAxios.delete(link);
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     return (
         <Layout>
@@ -128,6 +139,7 @@ const PostDetail = ({ postId, title }) => {
                                                 <Flex>
                                                     <PostVote
                                                         score={comment.score}
+                                                        postId={post.id}
                                                         votes={comment.votes}
                                                         commentId={comment.id}
                                                         setPost={setPost}

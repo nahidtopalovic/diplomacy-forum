@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }) {
             <AuthUserProvider>
                 <FetchProvider>
                     <ChakraProvider>
-                        <Component {...pageProps} />;
+                        <Component {...pageProps} />
                         <SignInModal />
                     </ChakraProvider>
                 </FetchProvider>

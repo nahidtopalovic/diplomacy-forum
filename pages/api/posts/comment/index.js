@@ -1,6 +1,6 @@
-import { now, db, firebase } from '../../../utils/db/firebase';
-import { authAdmin } from '../../../utils/db/firebase-admin';
-import { withAuth } from '../../../utils/middleware/withAuth';
+import { now, db, firebase } from '../../../../utils/db/firebase';
+import { authAdmin } from '../../../../utils/db/firebase-admin';
+import { withAuth } from '../../../../utils/middleware/withAuth';
 import { v4 as uuid } from 'uuid';
 
 const postComment = async (req, res) => {

@@ -10,6 +10,7 @@ const vote = async (req, res) => {
         if (vote == 'upvote') {
             if (comment) {
                 await upVoteComm(req, res, post, comment);
+                return;
             }
             await upVote(req, res, post);
         }
@@ -18,6 +19,7 @@ const vote = async (req, res) => {
         if (vote == 'downvote') {
             if (comment) {
                 await downVoteComm(req, res, post, comment);
+                return;
             }
             await downVote(req, res, post);
         }
@@ -26,6 +28,7 @@ const vote = async (req, res) => {
         if (vote == 'unvote') {
             if (comment) {
                 await unVoteComm(req, res, post, comment);
+                return;
             }
 
             await unVote(req, res, post);
@@ -196,49 +199,52 @@ const unVote = async (req, res, post) => {
 // UPVOTE
 //
 
-const upVoteComm = async (req, res, post) => {
+const upVoteComm = async (req, res, post, comment) => {
     const docsRef = await db
         .collection('responses')
         .where('id', '==', post)
         .get();
 
-    // TODO: get a reference to object that containts the answer in answers array!
-
-    // const commentRef = await db
-    // .collection('responses')
-    // .where('id', '==', post).where('answers', 'array-contains')
-
     const docId = docsRef.docs[0].id;
 
-    const docRef = db.collection('responses').doc(docId);
+    const docRef = await db.collection('responses').doc(docId);
 
     const data = await (await docRef.get()).data();
 
-    const isDownVoted =
-        data.answers.votes.find((vote) => vote.user === req.uid)?.vote === -1;
+    const answerObject = data.answers.find((answer) => answer.id === comment);
 
+    const isDownVoted =
+        answerObject.votes.find((vote) => vote.user === req.uid)?.vote === -1;
+
+    const newVote = { user: req.uid, vote: 1 };
+
+    let newAnswer = {};
     if (isDownVoted) {
-        await docRef.update({
-            'answers.votes': firebase.firestore.FieldValue.arrayRemove({
-                user: req.uid,
-                vote: -1,
-            }),
-        });
-        await docRef.update({
-            'answers.score': firebase.firestore.FieldValue.increment(1),
-        });
+        const votesFiltered = answerObject.votes.filter(
+            (vote) => vote.user != req.uid
+        );
+
+        const votes = [...votesFiltered, newVote];
+
+        newAnswer = {
+            ...answerObject,
+            votes,
+            score: answerObject.score + 2,
+        };
+    } else {
+        const votes = [...answerObject.votes, newVote];
+        newAnswer = {
+            ...answerObject,
+            votes,
+            score: answerObject.score + 1,
+        };
     }
 
-    await docRef.update({
-        'answers.votes': firebase.firestore.FieldValue.arrayUnion({
-            user: req.uid,
-            vote: 1,
-        }),
-    });
+    const newAnswers = data.answers.map((answer) =>
+        answer.id !== comment ? answer : newAnswer
+    );
 
-    await docRef.update({
-        'answers.score': firebase.firestore.FieldValue.increment(1),
-    });
+    await docRef.set({ answers: newAnswers }, { merge: true });
 
     const updatedSnapshot = await db
         .collection('responses')
@@ -256,7 +262,7 @@ const upVoteComm = async (req, res, post) => {
 // DOWNVOTE
 //
 
-const downVoteComm = async (req, res, post) => {
+const downVoteComm = async (req, res, post, comment) => {
     const docsRef = await db
         .collection('responses')
         .where('id', '==', post)
@@ -268,33 +274,40 @@ const downVoteComm = async (req, res, post) => {
 
     const data = await (await docRef.get()).data();
 
-    const isUpVoted =
-        data.answers.votes.find((vote) => vote.user === req.uid)?.vote === 1;
+    const answerObject = data.answers.find((answer) => answer.id === comment);
 
+    const isUpVoted =
+        answerObject.votes.find((vote) => vote.user === req.uid)?.vote === 1;
+
+    const newVote = { user: req.uid, vote: -1 };
+
+    let newAnswer = {};
     if (isUpVoted) {
-        await docRef.update({
-            'answers.votes': firebase.firestore.FieldValue.arrayRemove({
-                user: req.uid,
-                vote: 1,
-            }),
-        });
-        await docRef.update({
-            'answers.score': firebase.firestore.FieldValue.increment(-1),
-        });
+        const votesFiltered = answerObject.votes.filter(
+            (vote) => vote.user != req.uid
+        );
+
+        const votes = [...votesFiltered, newVote];
+
+        newAnswer = {
+            ...answerObject,
+            votes,
+            score: answerObject.score - 2,
+        };
+    } else {
+        const votes = [...answerObject.votes, newVote];
+        newAnswer = {
+            ...answerObject,
+            votes,
+            score: answerObject.score - 1,
+        };
     }
 
-    console.log('doc from downvoting:', data);
+    const newAnswers = data.answers.map((answer) =>
+        answer.id !== comment ? answer : newAnswer
+    );
 
-    await docRef.update({
-        'answers.votes': firebase.firestore.FieldValue.arrayUnion({
-            user: req.uid,
-            vote: -1,
-        }),
-    });
-
-    await docRef.update({
-        'answers.score': firebase.firestore.FieldValue.increment(-1),
-    });
+    await docRef.set({ answers: newAnswers }, { merge: true });
 
     const updatedSnapshot = await db
         .collection('responses')
@@ -312,7 +325,7 @@ const downVoteComm = async (req, res, post) => {
 // UNVOTE
 //
 
-const unVoteComm = async (req, res, post) => {
+const unVoteComm = async (req, res, post, comment) => {
     const docsRef = await db
         .collection('responses')
         .where('id', '==', post)
@@ -322,20 +335,34 @@ const unVoteComm = async (req, res, post) => {
 
     const docRef = await db.collection('responses').doc(docId);
 
-    const valueOfVote = docsRef.docs[0]
-        .data()
-        .answers.votes.find((ele) => ele.user === req.uid).vote;
+    const data = await (await docRef.get()).data();
 
-    await docRef.update({
-        'answeres.votes': firebase.firestore.FieldValue.arrayRemove({
-            user: req.uid,
-            vote: valueOfVote,
-        }),
-    });
+    const answerObject = data.answers.find((answer) => answer.id === comment);
 
-    await docRef.update({
-        'answers.score': firebase.firestore.FieldValue.increment(-valueOfVote),
-    });
+    const votesFiltered = answerObject.votes.filter(
+        (vote) => vote.user != req.uid
+    );
+
+    const voteValue = answerObject.votes.find(
+        (vote) => vote.user === req.uid
+    )?.vote;
+
+    if (!voteValue) {
+        res.status(404).end();
+        return;
+    }
+
+    const newAnswer = {
+        ...answerObject,
+        votes: votesFiltered,
+        score: answerObject.score - voteValue,
+    };
+
+    const newAnswers = data.answers.map((answer) =>
+        answer.id !== comment ? answer : newAnswer
+    );
+
+    await docRef.set({ answers: newAnswers }, { merge: true });
 
     const updatedSnapshot = await db
         .collection('responses')
@@ -344,7 +371,7 @@ const unVoteComm = async (req, res, post) => {
 
     if (!updatedSnapshot.empty) {
         const post = updatedSnapshot.docs[0].data();
-        res.status(200).send(post);
+        res.status(201).send(post);
         return;
     }
 };
