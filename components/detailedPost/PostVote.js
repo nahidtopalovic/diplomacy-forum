@@ -6,7 +6,16 @@ import { useAuth } from '../../context/AuthUserContext';
 import { BiDownvote, BiUpvote } from 'react-icons/bi';
 import ModalContext from '../../context/Modal';
 
-const PostVote = ({ score, votes, postId, commentId, setPost }) => {
+const PostVote = ({
+    post,
+    comment,
+    score,
+    votes,
+    postId,
+    commentId,
+    setPost,
+    fetchPost,
+}) => {
     const { authAxios } = useContext(FetchContext);
     const { authUser } = useAuth();
     const { onOpen } = useContext(ModalContext);
@@ -17,6 +26,7 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
         }
         return true;
     };
+
     const isUpVoted = () => {
         return votes.find((vote) => vote.user === authUser?.id)?.vote === 1;
     };
@@ -26,30 +36,143 @@ const PostVote = ({ score, votes, postId, commentId, setPost }) => {
     };
 
     const upVote = async () => {
-        const link = commentId
-            ? `votes/upvote/${postId}/?comment=${commentId}`
-            : `votes/upvote/${postId}/`;
-        const { data } = await authAxios.post(link);
+        try {
+            // optimistic update
+            const newVotes = [...votes].filter(
+                (vote) => vote.user !== authUser.id
+            );
+            newVotes.push({ user: authUser.id, vote: 1 });
 
-        setPost(data);
+            const prevVote = votes.filter(
+                (vote) => vote.user === authUser.id
+            )[0]?.vote;
+
+            let newPost = {};
+            if (!comment) {
+                newPost = {
+                    ...post,
+                    score: prevVote ? score + 2 : score + 1,
+                    votes: newVotes,
+                };
+            } else {
+                const newComment = {
+                    ...comment,
+                    score: prevVote ? score + 2 : score + 1,
+                    votes: newVotes,
+                };
+                const newAnswers = post.answers.map((answer) =>
+                    answer.id === comment.id ? newComment : answer
+                );
+                newPost = {
+                    ...post,
+                    answers: newAnswers,
+                };
+            }
+
+            setPost(newPost);
+
+            const link = commentId
+                ? `votes/upvote/${postId}/?comment=${commentId}`
+                : `votes/upvote/${postId}/`;
+            await authAxios.post(link);
+        } catch (err) {
+            // revert if something fails
+            fetchPost();
+            console.log(err);
+        }
     };
 
     const downVote = async () => {
-        const link = commentId
-            ? `votes/downvote/${postId}/?comment=${commentId}`
-            : `votes/downvote/${postId}/`;
-        const { data } = await authAxios.post(link);
+        try {
+            // optimistic update
+            const newVotes = [...votes].filter(
+                (vote) => vote.user !== authUser.id
+            );
+            newVotes.push({ user: authUser.id, vote: -1 });
 
-        setPost(data);
+            const prevVote = votes.filter(
+                (vote) => vote.user === authUser.id
+            )[0]?.vote;
+
+            let newPost = {};
+            if (!comment) {
+                newPost = {
+                    ...post,
+                    score: prevVote ? score - 2 : score - 1,
+                    votes: newVotes,
+                };
+            } else {
+                const newComment = {
+                    ...comment,
+                    score: prevVote ? score - 2 : score - 1,
+                    votes: newVotes,
+                };
+                const newAnswers = post.answers.map((answer) =>
+                    answer.id === comment.id ? newComment : answer
+                );
+                newPost = {
+                    ...post,
+                    answers: newAnswers,
+                };
+            }
+
+            setPost(newPost);
+
+            const link = commentId
+                ? `votes/downvote/${postId}/?comment=${commentId}`
+                : `votes/downvote/${postId}/`;
+            await authAxios.post(link);
+        } catch (err) {
+            // revert if something fails
+            fetchPost();
+            console.log(err);
+        }
     };
 
     const unVote = async () => {
-        const link = commentId
-            ? `votes/unvote/${postId}/?comment=${commentId}`
-            : `votes/unvote/${postId}/`;
-        const { data } = await authAxios.post(link);
+        try {
+            // optimistic update
+            const newVotes = [...votes].filter(
+                (vote) => vote.user !== authUser.id
+            );
 
-        setPost(data);
+            const prevVote = votes.filter(
+                (vote) => vote.user === authUser.id
+            )[0]?.vote;
+
+            let newPost = {};
+            if (!comment) {
+                newPost = {
+                    ...post,
+                    score: prevVote ? score - prevVote : score,
+                    votes: newVotes,
+                };
+            } else {
+                const newComment = {
+                    ...comment,
+                    score: prevVote ? score - prevVote : score,
+                    votes: newVotes,
+                };
+                const newAnswers = post.answers.map((answer) =>
+                    answer.id === comment.id ? newComment : answer
+                );
+                newPost = {
+                    ...post,
+                    answers: newAnswers,
+                };
+            }
+
+            setPost(newPost);
+
+            const link = commentId
+                ? `votes/unvote/${postId}/?comment=${commentId}`
+                : `votes/unvote/${postId}/`;
+            await authAxios.post(link);
+        } catch (err) {
+            // revert if something fails
+            fetchPost();
+            console.log(err);
+        }
     };
 
     return (

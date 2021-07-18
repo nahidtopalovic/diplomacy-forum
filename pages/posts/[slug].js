@@ -24,14 +24,15 @@ const PostDetail = ({ postId, title }) => {
     const { authUser } = useAuth();
     const { authAxios } = useContext(FetchContext);
 
-    useEffect(() => {
-        const fetchPost = async () => {
-            const postData = await axios.get(`/api/posts/${postId}`);
-            setPost(postData.data);
-        };
+    const fetchPost = async () => {
+        const postData = await axios.get(`/api/posts/${postId}`);
+        setPost(postData.data);
+    };
 
+    // handledeletecomment as dependency
+    useEffect(() => {
         fetchPost();
-    }, [handleDeleteComment]);
+    }, []);
 
     const handleSorting = () => {
         switch (commentSortType) {
@@ -64,14 +65,14 @@ const PostDetail = ({ postId, title }) => {
     // pass handleDeleteComment to button in alertpop up via context
     //
 
-    const handleDeleteComment = async (postId, commentId) => {
-        try {
-            const link = `posts/comment/${commentId}/?postId=${postId}`;
-            authAxios.delete(link);
-        } catch (err) {
-            console.log(err);
-        }
-    };
+    // const handleDeleteComment = async (postId, commentId) => {
+    //     try {
+    //         const link = `posts/comment/${commentId}/?postId=${postId}`;
+    //         authAxios.delete(link);
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // };
 
     return (
         <Layout>
@@ -100,6 +101,8 @@ const PostDetail = ({ postId, title }) => {
                                     votes={post.votes}
                                     postId={post.id}
                                     setPost={setPost}
+                                    post={post}
+                                    fetchPost={fetchPost}
                                 />
                                 <PostDetailedSummary
                                     tags={post.tags}
@@ -142,7 +145,10 @@ const PostDetail = ({ postId, title }) => {
                                                         postId={post.id}
                                                         votes={comment.votes}
                                                         commentId={comment.id}
+                                                        comment={comment}
+                                                        post={post}
                                                         setPost={setPost}
+                                                        fetchPost={fetchPost}
                                                     />
                                                     <PostDetailedSummary
                                                         author={comment.author}
