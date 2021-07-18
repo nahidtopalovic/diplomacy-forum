@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Container,
     Box,
@@ -16,20 +16,17 @@ import CommentContainer from '../../components/detailedPost/CommentContainer';
 import Head from 'next/head';
 import CommentInput from '../../components/post/CommentInput';
 import { useAuth } from '../../context/AuthUserContext';
-import { FetchContext } from '../../context/FetchContext';
 
 const PostDetail = ({ postId, title }) => {
     const [post, setPost] = useState(null);
     const [commentSortType, setCommentSortType] = useState('Votes');
     const { authUser } = useAuth();
-    const { authAxios } = useContext(FetchContext);
 
     const fetchPost = async () => {
         const postData = await axios.get(`/api/posts/${postId}`);
         setPost(postData.data);
     };
 
-    // handledeletecomment as dependency
     useEffect(() => {
         fetchPost();
     }, []);
@@ -61,18 +58,18 @@ const PostDetail = ({ postId, title }) => {
         return false;
     };
 
-    //
-    // pass handleDeleteComment to button in alertpop up via context
-    //
+    const removeCommentFromPosts = (commentId) => {
+        const newAnswers = post.answers.filter(
+            (answer) => answer.id !== commentId
+        );
 
-    // const handleDeleteComment = async (postId, commentId) => {
-    //     try {
-    //         const link = `posts/comment/${commentId}/?postId=${postId}`;
-    //         authAxios.delete(link);
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-    // };
+        const newPost = {
+            ...post,
+            answers: newAnswers,
+        };
+
+        setPost(newPost);
+    };
 
     return (
         <Layout>
@@ -162,6 +159,11 @@ const PostDetail = ({ postId, title }) => {
                                                             comment
                                                         )}
                                                         typeOfPost="comment"
+                                                        postId={post.id}
+                                                        commentId={comment.id}
+                                                        removeCommentFromPost={
+                                                            removeCommentFromPosts
+                                                        }
                                                     >
                                                         {comment.text}
                                                     </PostDetailedSummary>

@@ -9,7 +9,14 @@ import {
     Button,
 } from '@chakra-ui/react';
 
-const AlertDialogPost = ({ isOpen, setIsOpen, typeOfPost }) => {
+const AlertDialogPost = ({
+    postId,
+    commentId,
+    isOpen,
+    setIsOpen,
+    typeOfPost,
+    onDelete,
+}) => {
     const onClose = () => setIsOpen(false);
     const cancelRef = useRef();
     return (
@@ -30,7 +37,14 @@ const AlertDialogPost = ({ isOpen, setIsOpen, typeOfPost }) => {
                         <Button ref={cancelRef} onClick={onClose}>
                             Cancel
                         </Button>
-                        <Button colorScheme="red" onClick={onClose} ml={3}>
+                        <Button
+                            colorScheme="red"
+                            onClick={() => {
+                                onDelete(postId, commentId);
+                                onClose();
+                            }}
+                            ml={3}
+                        >
                             Delete
                         </Button>
                     </AlertDialogFooter>
