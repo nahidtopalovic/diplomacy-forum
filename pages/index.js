@@ -61,7 +61,6 @@ const Home = () => {
                         : `api/data?key=${lastKey}`;
                     const response = await axios.get(link);
 
-                    console.log('res', response);
                     setLastKey(response.data.lastKey);
                     setPosts(posts.concat(response.data.posts));
                     setNextPostsLoading(false);
