@@ -26,7 +26,6 @@ const uiConfig = {
             provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
             requireDisplayName: false,
         },
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
     ],
     callbacks: {
         // Avoid redirects after sign-in.
