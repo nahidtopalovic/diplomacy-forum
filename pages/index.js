@@ -22,7 +22,7 @@ import Select from 'react-select';
 const Home = () => {
     const router = useRouter();
     const [posts, setPosts] = useState(null);
-    const [sortType, setSortType] = useState('Views');
+    const [sortType, setSortType] = useState('Newest');
     const [lastKey, setLastKey] = useState('');
     const [nextPostsLoading, setNextPostsLoading] = useState(false);
     const [options, setOptions] = useState([]);
@@ -82,8 +82,6 @@ const Home = () => {
                 return (x, y) => new Date(x.created) - new Date(y.created);
             case 'Votes':
                 return (x, y) => y.score - x.score;
-            case 'Views':
-                return (x, y) => y.views - x.views;
             case 'Least responses':
                 return (x, y) => x.answers.length - y.answers.length;
             default:
@@ -150,13 +148,7 @@ const Home = () => {
 
             <Center mb={2} mt={1}>
                 <SortingButtons
-                    buttons={[
-                        'Votes',
-                        'Views',
-                        'Newest',
-                        'Oldest',
-                        'Least responses',
-                    ]}
+                    buttons={['Votes', 'Newest', 'Oldest', 'Least responses']}
                     selected={sortType}
                     setSelected={setSortType}
                 />
@@ -232,17 +224,3 @@ const Home = () => {
 };
 
 export default Home;
-
-// export async function getServerSideProps() {
-//     const data = await db.collection('responses').get();
-
-//     if (!data) {
-//         return {
-//             notFound: true,
-//         };
-//     }
-
-//     return {
-//         props: { responses: data },
-//     };
-// }
